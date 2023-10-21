@@ -1,9 +1,13 @@
 #pragma once
 
+
+
+
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "Gui/PresetPanel.h"
 #include "Gui/ProgramList.h"
+#include "Gui/TableListComponent.h"
 
 class JucePresetManagerAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
@@ -20,6 +24,8 @@ private:
 
     ProgramList programList;
     juce::TextButton cShow{ "show" };
+
+    TableListComponent  cTableList;
 
     JucePresetManagerAudioProcessor& audioProcessor;
 

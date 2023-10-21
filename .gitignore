@@ -1,5 +1,5 @@
 /JuceLibraryCode
-/Build
+/Builds
 
 # Prerequisites
 *.d
@@ -33,3 +33,4 @@
 *.exe
 *.out
 *.app
+*.bak

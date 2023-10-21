@@ -11,11 +11,11 @@
 
 #include <JuceHeader.h>
 
+#include "TableListComponent.h"
 
 
 
-
-class ProgramList : public Component, KeyListener
+class ProgramList : public Component, KeyListener, Timer
 {
 public:
 	ProgramList()
@@ -24,13 +24,7 @@ public:
 		addKeyListener(this);
 		setWantsKeyboardFocus(true);
 
-		ProgramsNames.ensureStorageAllocated(128);
-
-		for (int i = 0; i < 128; i++)
-		{
-			ProgramsNames.add(" prg " + String(i));
-		}
-
+		cSomeFeat.setColour(TextButton::buttonColourId, Colours::darkgreen);
 		addAndMakeVisible(cSomeFeat);
 
 		cSomeFeat.onClick = [&] {
@@ -40,10 +34,15 @@ public:
 				"You clicked it!");
 		};
 
+		cTableList.setName("nTableList");		
+		addAndMakeVisible(cTableList);
+
+		startTimer(40);
 	}
 
 	~ProgramList()
 	{
+		stopTimer();
 	}
 
 	// This is called to show or hide the list; when it's requested to show, the currently selected program number is passed
@@ -68,7 +67,6 @@ public:
 
 		if (b)
 		{
-			MakeProgramGrid();
 			Desktop::getInstance().getAnimator().fadeIn(this, animationTime);
 			grabKeyboardFocus();
 		}
@@ -108,84 +106,20 @@ public:
 	}
 
 private:
-	OwnedArray<Label> ProgramLabels;
+
 	int CurrentProgram = 0;
-	int swapSrc = -1, DestProgram = -1;
+	int PrevProgram = 0;
+	int DestProgram = -1;
+
+
 	bool bCalledToLoad = true;
 	String progNameCurrentlyOnDisplay;
 	int selectedBank_ = -1;
+	
 
 	Array<juce::String> ProgramsNames;
 
-
 	TextButton cSomeFeat{ "example" };
-
-	void MakeProgramGrid()
-	{
-		int row = 0, col = 0;
-
-		// This function is called each time the program list is invoked, 
-		// so in order to make sure that we have the current list we must destroy and create it each time.
-		ProgramLabels.clear();
-
-		// Create all 128 labels
-		for (int i = 0; i < 128; i++)
-		{
-			bool bChangeColour = i & 1;// (i == CurrentProgram) || String(Programs[i].ProgramName) == progNameCurrentlyOnDisplay;
-
-			// Get color for the active program
-			Colour color = bChangeColour ? Colour(0xFF575500) : (col & 1 ? Colour(0xFF202020) : Colour(0xFF404035));
-
-			// 8 * 16 = 128
-
-			const int PROG_LABEL_WIDTH = winw / 8;
-			const int PROG_LABEL_HEIGHT = winh / (16 + 1);
-
-			// Get label coords
-			int px = 2 + winx + col * (PROG_LABEL_WIDTH);
-			int py = barHeight + winy + row * (PROG_LABEL_HEIGHT);
-
-			// Create and draw label (automatically deleted by OwnedArray)
-			auto l = new Label("Entry_" + String(i), ProgramsNames[i]);
-			ProgramLabels.add(l);
-			Rectangle<int> rect(px, py, PROG_LABEL_WIDTH, PROG_LABEL_HEIGHT);
-			l->setBounds(rect.toNearestIntEdges());
-			l->setColour(Label::backgroundColourId, color);
-			l->setColour(Label::outlineColourId, color.contrasting());
-			l->addMouseListener(this, true);
-			addAndMakeVisible(ProgramLabels.getLast());
-
-			// Next row
-			if (++row > 15) { row = 0; col++; }
-		}
-	}
-
-	// Catch the mouse up event, close the list at any click
-	void mouseUp(const MouseEvent& event) override
-	{
-		if (event.eventComponent->getName().startsWith("Entry_"))
-		{
-			// Get the numerical ID from the component literal name
-			DestProgram = event.eventComponent->getName().substring(6).getIntValue();
-			if (!bCalledToLoad) { onClickToGet();  /*ShowHide(false); */ return; }
-
-			// Do we have a program number?
-			if (DestProgram > -1)
-			{
-				if (onClickProgram != nullptr)
-					onClickProgram(DestProgram);
-
-				AlertWindow::showMessageBoxAsync(MessageBoxIconType::InfoIcon,
-					"Debug",
-					String(DestProgram));
-
-				//ShowHide(false);
-			}
-		}
-		// Not clicked on any label? Just hide this component.
-		else
-			ShowHide(false);
-	}
 
 	bool keyPressed(const KeyPress& key, Component* originatingComponent) override
 	{
@@ -205,9 +139,11 @@ private:
 		winw = getParentWidth();
 		winh = getParentHeight();
 
-		barHeight = winh / 18;
+		barHeight = winh / 16;
 
-		MakeProgramGrid();
+		auto areaGrid = juce::Rectangle<int>(2, barHeight, winw, winh - barHeight);
+
+		cTableList.setBounds(areaGrid);
 
 		cSomeFeat.setBounds(winx + 2, winy + 2, barHeight * 2, barHeight - 4);
 	}
@@ -219,6 +155,8 @@ private:
 	int winw = 200;
 	int winh = 100;
 	int barHeight = winh / 18;
+
+	TableListComponent  cTableList;
 
 	void paint(Graphics& g) override
 	{
@@ -240,13 +178,39 @@ private:
 		// Window title
 		g.setColour(Colour(0xffbbaa00));
 		g.setFont(float(barHeight) * 0.9f);
-		g.drawFittedText("Presets", winx, winy, winw, barHeight, Justification::centred, 1.0f);
+		g.drawFittedText("Presets ToolBar", winx, winy, winw, barHeight, Justification::centred, 1.0f);
 
 		g.setColour(Colour(0xffff0000));
 		g.setFont(float(barHeight) * 0.9f);
 		g.drawText("[X]", winx, winy, winw, barHeight, Justification::right);
 
 	}
+
+	void timerCallback() override
+	{
+		if (cTableList.hasKeyboardFocus(true))
+		{
+			DestProgram = cTableList.getIdSelected();
+
+				if (DestProgram > -1 && DestProgram != PrevProgram)
+				{
+					AlertWindow::showMessageBoxAsync(MessageBoxIconType::InfoIcon,
+						"Debug",
+						String(DestProgram));
+
+						PrevProgram = DestProgram;
+				}
+		}
+	}
+
+	// Catch the mouse up event, close the list at any click not inside a child
+	void mouseUp(const MouseEvent& event) override
+	{
+
+		ShowHide(false);
+	
+	}
+
 
 	// -------------------------------------------------------
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ProgramList)

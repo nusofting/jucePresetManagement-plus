@@ -20,18 +20,12 @@ JucePresetManagerAudioProcessorEditor::JucePresetManagerAudioProcessorEditor (Ju
     cShow.setColour(TextButton::buttonNormal, Colours::darkblue);
     addAndMakeVisible(cShow);
     cShow.onClick = [&] { programList.ShowHide(true); };
-
     programList.getCtrlButton(&cShow);
 
-
-
-
-
-
-    
+     
 
     setResizable(true, true);
-    setSize (600, 500);
+    setSize (800, 400);
 }
 
 JucePresetManagerAudioProcessorEditor::~JucePresetManagerAudioProcessorEditor()
@@ -53,5 +47,5 @@ void JucePresetManagerAudioProcessorEditor::resized()
     cShow.setBounds(0, rectAbove.getBottom(), rectAbove.getWidth(), rectAbove.getHeight()/2);
 
     programList.setBounds(getLocalBounds());
-    
+
 }
