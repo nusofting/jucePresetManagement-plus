@@ -177,15 +177,15 @@ public:
 
    const int getIdSelected()
     {
-       const auto indexRow = table.getLastRowSelected();
+       const auto indexRow = table.getLastRowSelected();       
 
-       String text = dataList->getChildElement(indexRow)->getAttributeValue(0); 
-
-       if (text.isNotEmpty())
+       if (indexRow > -1)
+       {
+           const String text = dataList->getChildElement(indexRow)->getAttributeValue(0);
            return text.getIntValue();
+       }
        else
-           return -1;
- 
+           return indexRow; 
     }
 
 

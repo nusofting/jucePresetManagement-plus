@@ -13,7 +13,6 @@ JucePresetManagerAudioProcessorEditor::JucePresetManagerAudioProcessorEditor (Ju
 
 
     //create, show and hide the programList
-
     addAndMakeVisible(programList);
     programList.ShowHide(false);
 
@@ -22,10 +21,11 @@ JucePresetManagerAudioProcessorEditor::JucePresetManagerAudioProcessorEditor (Ju
     cShow.onClick = [&] { programList.ShowHide(true); };
     programList.getCtrlButton(&cShow);
 
-     
 
+        
+    // for some reason [resized()?] these must be at the end
     setResizable(true, true);
-    setSize (800, 400);
+    setSize (845, 400);
 }
 
 JucePresetManagerAudioProcessorEditor::~JucePresetManagerAudioProcessorEditor()
@@ -47,5 +47,4 @@ void JucePresetManagerAudioProcessorEditor::resized()
     cShow.setBounds(0, rectAbove.getBottom(), rectAbove.getWidth(), rectAbove.getHeight()/2);
 
     programList.setBounds(getLocalBounds());
-
 }

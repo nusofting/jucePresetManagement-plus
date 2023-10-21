@@ -119,7 +119,7 @@ private:
 
 	Array<juce::String> ProgramsNames;
 
-	TextButton cSomeFeat{ "example" };
+	TextButton cSomeFeat{ "save changes" };
 
 	bool keyPressed(const KeyPress& key, Component* originatingComponent) override
 	{
@@ -130,23 +130,7 @@ private:
 		return false;
 	}
 
-	void resized() override
-	{
-		// const auto winRect = getLocalBounds().reduced(4);
 
-		winx = 0;
-		winy = 0;
-		winw = getParentWidth();
-		winh = getParentHeight();
-
-		barHeight = winh / 16;
-
-		auto areaGrid = juce::Rectangle<int>(2, barHeight, winw, winh - barHeight);
-
-		cTableList.setBounds(areaGrid);
-
-		cSomeFeat.setBounds(winx + 2, winy + 2, barHeight * 2, barHeight - 4);
-	}
 
 	TextButton* showButton = nullptr;
 
@@ -186,6 +170,25 @@ private:
 
 	}
 
+	void resized() override
+	{
+		// const auto winRect = getLocalBounds().reduced(4);
+
+		winx = 0;
+		winy = 0;
+		winw = getParentWidth();
+		winh = getParentHeight();
+
+		barHeight = winh / 16;
+
+		auto areaGrid = juce::Rectangle<int>(2, barHeight, winw, winh - barHeight);
+
+		cTableList.setBounds(areaGrid);
+
+		cSomeFeat.setBounds(winx + 2, winy + 2, barHeight * 2, barHeight - 4);
+		cSomeFeat.changeWidthToFitText();
+	}
+
 	void timerCallback() override
 	{
 		if (cTableList.hasKeyboardFocus(true))
@@ -206,9 +209,7 @@ private:
 	// Catch the mouse up event, close the list at any click not inside a child
 	void mouseUp(const MouseEvent& event) override
 	{
-
-		ShowHide(false);
-	
+		ShowHide(false);	
 	}
 
 
