@@ -6,8 +6,8 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "Gui/PresetPanel.h"
-#include "Gui/ProgramList.h"
-#include "Gui/TableListComponent.h"
+#include "Gui/ProgramList.hpp"
+
 
 class JucePresetManagerAudioProcessorEditor  : public juce::AudioProcessorEditor
 {

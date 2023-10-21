@@ -280,7 +280,7 @@ private:
     void loadData()
     {
         // TO DO : not to use hard coded path
-        juce::File xmlTabledata{ "D:\\daHornet_bis_JUCE\\jucePresetManagement-plus\\Source\\Gui\\demo table data.xml" };
+        juce::File xmlTabledata{ "D:\\daHornet_bis_JUCE\\jucePresetManagement-plus\\Source\\Gui\\presets registry.xml" };
 
         demoData = XmlDocument::parse(xmlTabledata.loadFileAsString());
 

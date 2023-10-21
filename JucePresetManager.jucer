@@ -11,12 +11,10 @@
         <FILE id="FBoXm2" name="PresetManager.h" compile="0" resource="0" file="Source/Service/PresetManager.h"/>
       </GROUP>
       <GROUP id="{563FD316-4EA6-51C3-AEB8-0B366A85B188}" name="Gui">
-        <FILE id="JD8wyj" name="demo table data.xml" compile="0" resource="1"
-              file="Source/Gui/demo table data.xml"/>
         <FILE id="kS7HKo" name="PresetPanel.h" compile="0" resource="0" file="Source/Gui/PresetPanel.h"/>
-        <FILE id="sIQUp9" name="ProgramList.h" compile="0" resource="0" file="Source/Gui/ProgramList.h"/>
-        <FILE id="NUfpDH" name="TableListComponent.h" compile="0" resource="0"
-              file="Source/Gui/TableListComponent.h"/>
+        <FILE id="EbY6F2" name="ProgramList.hpp" compile="0" resource="0" file="Source/Gui/ProgramList.hpp"/>
+        <FILE id="AjnDoi" name="TableListComponent.hpp" compile="0" resource="0"
+              file="Source/Gui/TableListComponent.hpp"/>
       </GROUP>
       <GROUP id="{77CC1B33-5DF4-E7DB-59F2-15F756C1DF3F}" name="Utility">
         <FILE id="Pq7ulx" name="ParameterHelper.h" compile="0" resource="0"
