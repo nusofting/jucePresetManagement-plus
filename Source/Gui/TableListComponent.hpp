@@ -66,7 +66,7 @@ public:
         auto alternateColour = getLookAndFeel().findColour (ListBox::backgroundColourId)
                                                .interpolatedWith (getLookAndFeel().findColour (ListBox::textColourId), 0.03f);
         if (rowIsSelected)
-            g.fillAll (Colours::lightblue);
+            g.fillAll (Colours::darkturquoise);
         else if (rowNumber % 2)
             g.fillAll (alternateColour);
     }
@@ -104,7 +104,7 @@ public:
     }
 
     // This is overloaded from TableListBoxModel, and must update any custom components that we're using
-    Component* refreshComponentForCell (int rowNumber, int columnId, bool /*isRowSelected*/,
+    Component* refreshComponentForCell (int rowNumber, int columnId, bool isRowSelected,
                                         Component* existingComponentToUpdate) override
     {
         if (columnId == 1 ) // The ID  does not have a custom editable component
@@ -121,6 +121,26 @@ public:
             textLabel = new EditableTextCustomComponent (*this);
 
         textLabel->setRowAndColumn (rowNumber, columnId);
+
+   
+		//textLabel->onTextChange = [&]
+		//	{
+  //              if (isRowSelected)
+  //              {
+  //                  const auto indexRow = table.getLastRowSelected();
+
+  //                  if (indexRow > -1)
+  //                  {
+  //                      AlertWindow::showMessageBoxAsync(MessageBoxIconType::InfoIcon,
+  //                          "Debug",                      
+  //                          "text changed at row:" + String(indexRow + 1) + ", column:" + String(columnId)
+  //                      );
+  //                  }
+  //              }
+		//	};
+
+
+
         return textLabel;
     }
 
@@ -155,6 +175,7 @@ public:
     //    dataList->getChildElement (rowNumber)->setAttribute ("Rating", newRating);
     //}
 
+    // A couple of quick methods to set and get cell values when the user changes them
     String getText (const int columnNumber, const int rowNumber) const
     {
         return dataList->getChildElement (rowNumber)->getStringAttribute ( getAttributeNameForColumnId(columnNumber));
@@ -174,7 +195,7 @@ public:
     }
     //==============================================================================
 
-
+  // return the ID of the selected row as int
    const int getIdSelected()
     {
        const auto indexRow = table.getLastRowSelected();       
@@ -197,7 +218,8 @@ private:
     XmlElement* columnList = nullptr;     // A pointer to the sub-node of demoData that contains the list of columns
     XmlElement* dataList   = nullptr;     // A pointer to the sub-node of demoData that contains the list of data rows
     int numRows = 9;                          // The number of rows of data we've got
-    int indexRow = -1;
+    int editRow = -1;
+    int editColumn = -1;
 
     //==============================================================================
     // This is a custom Label component, which we use for the table's editable text columns.
@@ -208,7 +230,23 @@ private:
         {
             // double click to edit the label text; single click handled below
             setEditable (false, true, false);
-        }
+
+
+			Label::onTextChange = [&]
+				{
+					const auto indexRow = owner.table.getLastRowSelected();
+
+					if (indexRow > -1)
+					{
+						AlertWindow::showMessageBoxAsync(MessageBoxIconType::InfoIcon,
+							"Debug",
+							"text changed at row:" + String(indexRow + 1) 
+                            + ". Here we need to hint to save the XML of the registry" 
+                            + " by flashing [save changes]"
+						);
+					}
+				};
+		}
 
         void mouseDown (const MouseEvent& event) override
         {
@@ -237,7 +275,9 @@ private:
             if (! dynamic_cast<LookAndFeel_V4*> (&lf))
                 lf.setColour (textColourId, Colours::black);
 
-            Label::paint (g);
+            lf.setColour(outlineColourId, Colours::black);
+
+            Label::paint (g);           
         }
 
     private:
@@ -276,7 +316,7 @@ private:
     };
 
     //==============================================================================
-    // this loads the embedded database XML file into memory
+    // this loads the database XML file into memory
     void loadData()
     {
         // TO DO : not to use hard coded path
