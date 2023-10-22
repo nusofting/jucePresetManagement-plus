@@ -32,10 +32,21 @@ public:
 			AlertWindow::showMessageBoxAsync(MessageBoxIconType::InfoIcon,
 				"Debug",
 				"You clicked it!");
-		};
 
-		cTableList.setName("nTableList");		
+			cTableList.bCellChanged = false;
+			cSomeFeat.setColour(TextButton::buttonColourId, Colours::darkgreen);
+			};
+
+		cPassiveMsg.setEditable(false, false, false);
+		cPassiveMsg.setColour(Label::outlineColourId, Colours::transparentBlack);
+		cPassiveMsg.setColour(Label::textColourId, Colours::red);
+		cPassiveMsg.setText("<<< Usaved changes will be lost", NotificationType::dontSendNotification);
+		addAndMakeVisible(cPassiveMsg);
+
+		cTableList.setName("nTableList");
 		addAndMakeVisible(cTableList);
+
+		setTitle();
 
 		startTimer(40);
 	}
@@ -60,6 +71,8 @@ public:
 
 			if (curName.isNotEmpty())
 				setTitle("PROGRAM LIST : " + curName + " Bank  : click a slot to load a preset");
+			else
+				setTitle();
 
 
 		if (theCurrentProgram >= 0) CurrentProgram = theCurrentProgram;
@@ -81,11 +94,12 @@ public:
 		}
 	}
 
-	void setTitle(String title_)
+	void setTitle(String title_ = "Presets ToolBar")
 	{
-		//titleOfBankWindow = title_;
+		titleOfBankWindow = title_;
 	}
-	// Attach a callback that will be called when a Program label is clicked
+
+	// Attach a callback that will be called when a Program row is clicked
 	std::function<void(int)> onClickProgram;
 
 	std::function<void(void)> onClickToGet;
@@ -93,12 +107,10 @@ public:
 	int getSlotNumber() {
 		return DestProgram;
 	}
-
 	void getProgNameString(const String& display)
 	{
 		progNameCurrentlyOnDisplay = display;
 	}
-
 	// get the pointer to the TextButton used to activate this component
 	void getCtrlButton(TextButton* ctrl_)
 	{
@@ -115,23 +127,15 @@ private:
 	bool bCalledToLoad = true;
 	String progNameCurrentlyOnDisplay;
 	int selectedBank_ = -1;
-	
 
 	Array<juce::String> ProgramsNames;
 
+	//ToolBar objects
 	TextButton cSomeFeat{ "save changes" };
+	Label cPassiveMsg;
+	String titleOfBankWindow;
 
-	bool keyPressed(const KeyPress& key, Component* originatingComponent) override
-	{
-		// Catch the ESC key to hide this component
-		if (key == KeyPress::escapeKey)
-			ShowHide(false);
-
-		return false;
-	}
-
-
-
+	// main GUI launcher
 	TextButton* showButton = nullptr;
 
 	int winx = 0;
@@ -161,13 +165,12 @@ private:
 
 		// Window title
 		g.setColour(Colour(0xffbbaa00));
-		g.setFont(float(barHeight) * 0.9f);
-		g.drawFittedText("Presets ToolBar", winx, winy, winw, barHeight, Justification::centred, 1.0f);
+		g.setFont(float(barHeight) * 0.8f);
+		g.drawFittedText(titleOfBankWindow, winx, winy, winw, barHeight, Justification::centred, 1.0f);
 
 		g.setColour(Colour(0xffff0000));
-		g.setFont(float(barHeight) * 0.9f);
+		g.setFont(float(barHeight) * 0.8f);
 		g.drawText("[X]", winx, winy, winw, barHeight, Justification::right);
-
 	}
 
 	void resized() override
@@ -187,6 +190,11 @@ private:
 
 		cSomeFeat.setBounds(winx + 2, winy + 2, barHeight * 2, barHeight - 4);
 		cSomeFeat.changeWidthToFitText();
+
+		Font msgFont(float(barHeight) * 0.6f);
+		cPassiveMsg.setFont(msgFont);
+		const int w = msgFont.getStringWidth("<<< Usaved changes will be lost");
+		cPassiveMsg.setBounds(cSomeFeat.getRight(), winy + 2, w, barHeight - 4);
 	}
 
 	void timerCallback() override
@@ -195,23 +203,40 @@ private:
 		{
 			DestProgram = cTableList.getIdSelected();
 
-				if (DestProgram > -1 && DestProgram != PrevProgram)
-				{
-					AlertWindow::showMessageBoxAsync(MessageBoxIconType::InfoIcon,
-						"Debug",
-						String(DestProgram));
+			if (DestProgram > -1 && DestProgram != PrevProgram)
+			{
+				//AlertWindow::showMessageBoxAsync(MessageBoxIconType::InfoIcon,
+				//	"Debug",
+				//	String(DestProgram));
 
-						PrevProgram = DestProgram;
-				}
+				PrevProgram = DestProgram;
+			}	
 		}
+
+		if (cTableList.bCellChanged)
+		{
+			cSomeFeat.setColour(TextButton::buttonColourId, Colours::red);
+		}
+
+		cPassiveMsg.setVisible(cTableList.bCellChanged);
 	}
+
+	bool bCellChangedHistory = true;
 
 	// Catch the mouse up event, close the list at any click not inside a child
 	void mouseUp(const MouseEvent& event) override
 	{
-		ShowHide(false);	
+		ShowHide(false);
 	}
 
+	// Catch the ESC key to hide this component
+	bool keyPressed(const KeyPress& key, Component* originatingComponent) override
+	{		
+		if (key == KeyPress::escapeKey)
+			ShowHide(false);
+
+		return false;
+	}
 
 	// -------------------------------------------------------
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ProgramList)

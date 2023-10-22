@@ -123,24 +123,6 @@ public:
         textLabel->setRowAndColumn (rowNumber, columnId);
 
    
-		//textLabel->onTextChange = [&]
-		//	{
-  //              if (isRowSelected)
-  //              {
-  //                  const auto indexRow = table.getLastRowSelected();
-
-  //                  if (indexRow > -1)
-  //                  {
-  //                      AlertWindow::showMessageBoxAsync(MessageBoxIconType::InfoIcon,
-  //                          "Debug",                      
-  //                          "text changed at row:" + String(indexRow + 1) + ", column:" + String(columnId)
-  //                      );
-  //                  }
-  //              }
-		//	};
-
-
-
         return textLabel;
     }
 
@@ -191,7 +173,7 @@ public:
     void resized() override
     {
         // position our table with a gap around its edge
-        table.setBoundsInset (BorderSize<int> (8));
+        table.setBoundsInset (BorderSize<int> (4));
     }
     //==============================================================================
 
@@ -200,7 +182,7 @@ public:
     {
        const auto indexRow = table.getLastRowSelected();       
 
-       if (indexRow > -1)
+       if (indexRow > -1 && dataList)
        {
            const String text = dataList->getChildElement(indexRow)->getAttributeValue(0);
            return text.getIntValue();
@@ -209,17 +191,22 @@ public:
            return indexRow; 
     }
 
+   // do we need get() and set() methods and use private variables?
+   bool bCellChanged = false;
+   int editedRow = -1;
+   int editedColumn = -1;
 
 private:
     TableListBox table;     // the table component itself
     Font font  { 14.0f };
 
-    std::unique_ptr<XmlElement> demoData;  // This is the XML document loaded from the embedded file "demo table data.xml"
-    XmlElement* columnList = nullptr;     // A pointer to the sub-node of demoData that contains the list of columns
-    XmlElement* dataList   = nullptr;     // A pointer to the sub-node of demoData that contains the list of data rows
+    std::unique_ptr<XmlElement> presetsData;  // This is the XML document loaded from the file "presets registry.xml"
+    XmlElement* columnList = nullptr;         // A pointer to the sub-node of presetsData that contains the list of columns
+    XmlElement* dataList   = nullptr;         // A pointer to the sub-node of presetsData that contains the list of data rows
     int numRows = 9;                          // The number of rows of data we've got
-    int editRow = -1;
-    int editColumn = -1;
+
+
+  
 
     //==============================================================================
     // This is a custom Label component, which we use for the table's editable text columns.
@@ -236,15 +223,23 @@ private:
 				{
 					const auto indexRow = owner.table.getLastRowSelected();
 
+                    owner.editedRow = indexRow;
+                    owner.editedColumn = columnId;
+                    owner.bCellChanged = true;
+
 					if (indexRow > -1)
 					{
 						AlertWindow::showMessageBoxAsync(MessageBoxIconType::InfoIcon,
 							"Debug",
-							"text changed at row:" + String(indexRow + 1) 
+							"text changed at cell:" + String(indexRow + 1) +
+                            ", " + String(owner.editedColumn) +
                             + ". Here we need to hint to save the XML of the registry" 
                             + " by flashing [save changes]"
 						);
 					}
+
+                                 
+
 				};
 		}
 
@@ -261,7 +256,7 @@ private:
             owner.setText (columnId, row, getText());
         }
 
-        // Our demo code will call this when we may need to update our contents
+        // Our code will call this when we may need to update our contents
         void setRowAndColumn (const int newRow, const int newColumn)
         {
             row = newRow;
@@ -322,10 +317,10 @@ private:
         // TO DO : not to use hard coded path
         juce::File xmlTabledata{ "D:\\daHornet_bis_JUCE\\jucePresetManagement-plus\\Source\\Gui\\presets registry.xml" };
 
-        demoData = XmlDocument::parse(xmlTabledata.loadFileAsString());
+        presetsData = XmlDocument::parse(xmlTabledata.loadFileAsString());
 
-        dataList   = demoData->getChildByName ("DATA");
-        columnList = demoData->getChildByName ("COLUMNS");
+        dataList   = presetsData->getChildByName ("DATA");
+        columnList = presetsData->getChildByName ("COLUMNS");
 
         numRows = dataList->getNumChildElements();
     }

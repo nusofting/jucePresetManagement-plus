@@ -1,4 +1,4 @@
-<DEMO_TABLE_DATA>
+<PRESETS_TABLE_DATA>
     <COLUMNS>
         <COLUMN columnId="1" name="ID"     width="50"/>
         <COLUMN columnId="2" name="Preset" width="200"/>
@@ -30,4 +30,4 @@
         <ITEM ID="20"  Preset="pad sound"  Type="synth" Date="2022" Author="namenik" Notes="what is for"/>
         
     </DATA>
-</DEMO_TABLE_DATA>
+</PRESETS_TABLE_DATA>

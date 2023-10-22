@@ -2,7 +2,8 @@
 
 <JUCERPROJECT id="VNu7qj" name="JucePresetManager" projectType="audioplug"
               useAppConfig="0" displaySplashScreen="1" jucerFormatVersion="1"
-              companyName="TAP" version="0.0.1" cppLanguageStandard="17" pluginFormats="buildStandalone,buildVST,buildVST3">
+              companyName="TAP" version="0.0.1" cppLanguageStandard="17" pluginFormats="buildStandalone,buildVST,buildVST3"
+              defines="JUCE_MODAL_LOOPS_PERMITTED=0">
   <MAINGROUP id="RRpdHw" name="JucePresetManager">
     <GROUP id="{D17E9897-EF34-A91C-A338-6713CAA4ACD8}" name="Source">
       <GROUP id="{FCD722C4-0EC4-585F-609A-627DD903357A}" name="Service">
