@@ -40,17 +40,16 @@ public:
 		cPassiveMsg.setEditable(false, false, false);
 		cPassiveMsg.setColour(Label::outlineColourId, Colours::transparentBlack);
 		cPassiveMsg.setColour(Label::textColourId, Colours::red);
-		cPassiveMsg.setText("<<< Usaved changes will be lost", NotificationType::dontSendNotification);
+		cPassiveMsg.setText("<<< Unsaved changes will be lost", NotificationType::dontSendNotification);
 		addAndMakeVisible(cPassiveMsg);
 
 		cTableList.setName("nTableList");
-
 		PresetsRegistry prstReg;
-
-		if(cTableList.build(prstReg.defaultDirectoryPath))
+		if(cTableList.buildTable(prstReg.defaultDirectoryPath))
 			addAndMakeVisible(cTableList);
 
-		setTitle();
+
+		setTitle(); // can be changed
 
 		startTimer(40);
 	}

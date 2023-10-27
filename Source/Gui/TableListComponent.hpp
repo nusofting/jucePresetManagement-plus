@@ -13,8 +13,6 @@
 
 #include <JuceHeader.h>
 
-
-
 //==============================================================================
 /**
     This class shows how to implement a TableListBoxModel to show in a TableListBox.
@@ -28,7 +26,7 @@ public:
   
     }
 
-    bool build(const String dirPath)
+    bool buildTable(const String dirPath)
     {
         if (dirPath.isNotEmpty())
         {
@@ -218,9 +216,7 @@ private:
     XmlElement* columnList = nullptr;         // A pointer to the sub-node of presetsData that contains the list of columns
     XmlElement* dataList   = nullptr;         // A pointer to the sub-node of presetsData that contains the list of data rows
     int numRows = 0;                          // The number of rows of data we've got
-
-
-  
+      
 
     //==============================================================================
     // This is a custom Label component, which we use for the table's editable text columns.

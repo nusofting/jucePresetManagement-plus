@@ -2,34 +2,23 @@
 
 #include <JuceHeader.h>
 
-
+//@ The presets_registry_log.xml is a temporary file used to build the presets table layout
+// the data in this file are duplicates of the properties store in each preset file
 class PresetsRegistry
 {
 public:
 
-	
-
 	PresetsRegistry() {
 
+		// TO DO: unify the preset directory setup
 		const File defaultDirectoryCopy{ File::getSpecialLocation(
-	File::SpecialLocationType::commonDocumentsDirectory)
+		File::SpecialLocationType::commonDocumentsDirectory)
 		.getChildFile(ProjectInfo::companyName)
 		.getChildFile(ProjectInfo::projectName)
 		};
 
 		defaultDirectoryPath = defaultDirectoryCopy.getFullPathName();
-
 	};
-
-	//void savePreset(const String& presetName);
-	//void deletePreset(const String& presetName);
-	//void loadPreset(const String& presetName);
-	//int loadNextPreset();
-	//int loadPreviousPreset();
-
-	
-
-
 
 	StringArray getAllPresets() const
 	{
@@ -86,7 +75,7 @@ public:
 		}
 
 		XmlElement* data = new XmlElement("DATA");
-		//populate data
+		//populate data (to be expanded to read from preset files)
 		StringArray presetNames = getAllPresets();
 		int count = 1;
 		for (auto& prstName : presetNames)
@@ -96,10 +85,10 @@ public:
 				XmlElement* line = new XmlElement("ITEM");
 				line->setAttribute("ID", String(count++));
 				line->setAttribute("Preset", prstName);
-				line->setAttribute("Type", "empty");
-				line->setAttribute("Date", "empty");
+				line->setAttribute("Type",   "empty");
+				line->setAttribute("Date",   "empty");
 				line->setAttribute("Author", "empty");
-				line->setAttribute("Notes", "empty");
+				line->setAttribute("Notes",  "empty");
 
 				if (line) 	data->addChildElement(line);
 			}
@@ -119,12 +108,12 @@ public:
 
 	String defaultDirectoryPath;
 
-	//String getCurrentPreset() const;
+
 private:
 	//void valueTreeRedirected(ValueTree& treeWhichHasBeenChanged) override;
 
 	//AudioProcessorValueTreeState& valueTreeState;
 	//Value currentPreset;
 
-	
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PresetsRegistry)	
 };

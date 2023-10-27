@@ -25,8 +25,6 @@ private:
     ProgramList programList;
     juce::TextButton cShow{ "show" };
 
-  
-
     JucePresetManagerAudioProcessor& audioProcessor;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JucePresetManagerAudioProcessorEditor)
