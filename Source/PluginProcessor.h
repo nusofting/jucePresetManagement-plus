@@ -47,12 +47,20 @@ public:
 
     Service::PresetManager& getPresetManager() { return *presetManager; }
 
-    PresetsRegistry makePrstReg;
 
+    std::unique_ptr<PresetsRegistry> makePrstReg;
+   
+
+    juce::XmlElement& getProcPresetRegistry()
+    {
+        return presetRegistryForTable;
+    }
 
 private:
     AudioProcessorValueTreeState valueTreeState;
     std::unique_ptr<Service::PresetManager> presetManager;
+
+    juce::XmlElement presetRegistryForTable;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JucePresetManagerAudioProcessor)
 };

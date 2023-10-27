@@ -13,12 +13,13 @@
 
 #include "TableListComponent.hpp"
 #include "../Service/PresetsRegistry.hpp"
+#include "../PluginProcessor.h"
 
 
 class ProgramList : public Component, KeyListener, Timer
 {
 public:
-	ProgramList()
+	ProgramList(JucePresetManagerAudioProcessor& p) : audioProcessor(p)
 	{
 		setSize(200, 100);
 		addKeyListener(this);
@@ -43,10 +44,9 @@ public:
 		cPassiveMsg.setText("<<< Unsaved changes will be lost", NotificationType::dontSendNotification);
 		addAndMakeVisible(cPassiveMsg);
 
-		cTableList.setName("nTableList");
-		PresetsRegistry prstReg;
-		if(cTableList.buildTable(prstReg.defaultDirectoryPath))
-			addAndMakeVisible(cTableList);
+		cTableList.setName("nTableList");	
+		cTableList.buildTable(p.getProcPresetRegistry());
+		addAndMakeVisible(cTableList);
 
 
 		setTitle(); // can be changed
@@ -121,6 +121,8 @@ public:
 	}
 
 private:
+
+	JucePresetManagerAudioProcessor& audioProcessor;
 
 	int CurrentProgram = 0;
 	int PrevProgram = 0;

@@ -2,13 +2,18 @@
 
 #include <JuceHeader.h>
 
+#include "../Source/PluginProcessor.h"
+
+
 //@ The presets_registry_log.xml is a temporary file used to build the presets table layout
 // the data in this file are duplicates of the properties store in each preset file
 class PresetsRegistry
 {
 public:
 
-	PresetsRegistry() {
+	String defaultDirectoryPath;
+
+	PresetsRegistry(XmlElement& procPresetReg_) : procPresetReg(procPresetReg_) {
 
 		// TO DO: unify the preset directory setup
 		const File defaultDirectoryCopy{ File::getSpecialLocation(
@@ -34,7 +39,7 @@ public:
 		return presets;
 	}
 
-	bool SaveRegistryToXMLFile()
+	bool SaveRegistryToXMLFileAndMemory()
 	{
 		XmlElement* columns = new XmlElement("COLUMNS");
 		//populate columns
@@ -94,26 +99,25 @@ public:
 			}
 		}
 
-		XmlElement main("PRESETS_TABLE_DATA");
-		main.addChildElement(columns);
-		main.addChildElement(data);
+		XmlElement* main = new XmlElement("PRESETS_TABLE_DATA");
+		main->addChildElement(columns);
+		main->addChildElement(data);
+
+		//store the presets_registry in stack memory by deep copy
+		procPresetReg = XmlElement(*main);
 
 		String fileName = defaultDirectoryPath + "//" + "presets_registry_log.xml";
 
 		File f2(fileName);
 		if (f2.create().failed()) return false;
 
-		return f2.replaceWithText(main.toString());
+		return f2.replaceWithText(main->toString());
 	}
 
-	String defaultDirectoryPath;
-
-
 private:
-	//void valueTreeRedirected(ValueTree& treeWhichHasBeenChanged) override;
 
-	//AudioProcessorValueTreeState& valueTreeState;
-	//Value currentPreset;
+	XmlElement& procPresetReg;
+
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PresetsRegistry)	
 };

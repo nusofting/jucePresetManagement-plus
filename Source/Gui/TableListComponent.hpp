@@ -26,12 +26,11 @@ public:
   
     }
 
-    bool buildTable(const String dirPath)
+    void buildTable(juce::XmlElement& madePrestReg)
     {
-        if (dirPath.isNotEmpty())
-        {
+   
             // Load some data 
-            loadData(dirPath);
+            loadData(madePrestReg);
 
             // Create our table component and add it to this component..
             addAndMakeVisible(table);
@@ -59,11 +58,6 @@ public:
             table.getHeader().setStretchToFitActive(true);
 
             table.setMultipleSelectionEnabled(false);
-
-            return true;
-        }
-
-        return false;
     }
 
     // This is overloaded from TableListBoxModel, and must return the total number of rows in our table
@@ -322,12 +316,9 @@ private:
 
     //==============================================================================
     // this loads the database XML file into memory
-    void loadData(const String dirPath = "")
+    void loadData(juce::XmlElement& madePrestReg)
     {
-         // TO DO : not to use hard coded path
-        juce::File xmlTabledata{ dirPath + "\\presets_registry_log.xml" };
-
-        presetsData = XmlDocument::parse(xmlTabledata.loadFileAsString());
+        presetsData.reset( new XmlElement(madePrestReg));
 
         dataList   = presetsData->getChildByName ("DATA");
         columnList = presetsData->getChildByName ("COLUMNS");

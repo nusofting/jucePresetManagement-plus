@@ -22,7 +22,8 @@ private:
     GenericAudioProcessorEditor genericAudioProcessorEditor;
     Gui::PresetPanel presetPanel;
 
-    ProgramList programList;
+    std::unique_ptr<ProgramList> programList;
+     
     juce::TextButton cShow{ "show" };
 
     JucePresetManagerAudioProcessor& audioProcessor;

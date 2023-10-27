@@ -5,14 +5,16 @@ JucePresetManagerAudioProcessor::JucePresetManagerAudioProcessor() :
     AudioProcessor(BusesProperties()
         .withInput("Input", juce::AudioChannelSet::stereo(), true)
         .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
-    valueTreeState(*this, nullptr, ProjectInfo::projectName, Utility::ParameterHelper::createParameterLayout())
+    valueTreeState(*this, nullptr, ProjectInfo::projectName, Utility::ParameterHelper::createParameterLayout()),
+    presetRegistryForTable("PRESETS_TABLE_DATA")
 {
     valueTreeState.state.setProperty(Service::PresetManager::presetNameProperty, "", nullptr);
     valueTreeState.state.setProperty("version", ProjectInfo::versionString, nullptr);
 
     presetManager = std::make_unique<Service::PresetManager>(valueTreeState);
 
-    makePrstReg.SaveRegistryToXMLFile();
+    makePrstReg.reset(new PresetsRegistry(presetRegistryForTable));
+    makePrstReg->SaveRegistryToXMLFileAndMemory();
 }
 
 JucePresetManagerAudioProcessor::~JucePresetManagerAudioProcessor()

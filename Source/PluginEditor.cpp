@@ -11,15 +11,15 @@ JucePresetManagerAudioProcessorEditor::JucePresetManagerAudioProcessorEditor (Ju
     addAndMakeVisible(presetPanel);
 
 
-
     //create, show and hide the programList
-    addAndMakeVisible(programList);
-    programList.ShowHide(false);
+    programList.reset(new ProgramList(p));
+    addAndMakeVisible(programList.get());
+    programList->ShowHide(false);
 
     cShow.setColour(TextButton::buttonNormal, Colours::darkblue);
     addAndMakeVisible(cShow);
-    cShow.onClick = [&] { programList.ShowHide(true); };
-    programList.getCtrlButton(&cShow);
+    cShow.onClick = [&] { programList->ShowHide(true); };
+    programList->getCtrlButton(&cShow);
 
 
         
@@ -46,5 +46,5 @@ void JucePresetManagerAudioProcessorEditor::resized()
     const auto rectAbove = presetPanel.getBounds();
     cShow.setBounds(0, rectAbove.getBottom(), rectAbove.getWidth(), rectAbove.getHeight()/2);
 
-    programList.setBounds(getLocalBounds());
+    programList->setBounds(getLocalBounds());
 }
