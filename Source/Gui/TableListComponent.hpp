@@ -13,6 +13,8 @@
 
 #include <JuceHeader.h>
 
+
+
 //==============================================================================
 /**
     This class shows how to implement a TableListBoxModel to show in a TableListBox.
@@ -23,35 +25,47 @@ class TableListComponent    : public Component,
 public:
     TableListComponent()
     {
-        // Load some data from an embedded XML file..
-        loadData();
+  
+    }
 
-        // Create our table component and add it to this component..
-        addAndMakeVisible (table);
-        table.setModel (this);
-
-        // give it a border
-        table.setColour (ListBox::outlineColourId, Colours::grey);
-        table.setOutlineThickness (1);
-
-        // Add some columns to the table header, based on the column list in our database..
-        for (auto* columnXml : columnList->getChildIterator())
+    bool build(const String dirPath)
+    {
+        if (dirPath.isNotEmpty())
         {
-            table.getHeader().addColumn (columnXml->getStringAttribute ("name"),
-                                         columnXml->getIntAttribute ("columnId"),
-                                         columnXml->getIntAttribute ("width"),
-                                         50, 400,
-                                         TableHeaderComponent::defaultFlags);
+            // Load some data 
+            loadData(dirPath);
+
+            // Create our table component and add it to this component..
+            addAndMakeVisible(table);
+            table.setModel(this);
+
+            // give it a border
+            table.setColour(ListBox::outlineColourId, Colours::grey);
+            table.setOutlineThickness(1);
+
+            // Add some columns to the table header, based on the column list in our database..
+            for (auto* columnXml : columnList->getChildIterator())
+            {
+                table.getHeader().addColumn(columnXml->getStringAttribute("name"),
+                    columnXml->getIntAttribute("columnId"),
+                    columnXml->getIntAttribute("width"),
+                    50, 400,
+                    TableHeaderComponent::defaultFlags);
+            }
+
+            // we could now change some initial settings..
+            table.getHeader().setSortColumnId(1, true); // sort forwards by the ID column
+            //table.getHeader().setColumnVisible (7, false); // hide the "length" column until the user shows it
+
+            // un-comment this line to have a go of stretch-to-fit mode
+            table.getHeader().setStretchToFitActive(true);
+
+            table.setMultipleSelectionEnabled(false);
+
+            return true;
         }
 
-        // we could now change some initial settings..
-        table.getHeader().setSortColumnId (1, true); // sort forwards by the ID column
-        //table.getHeader().setColumnVisible (7, false); // hide the "length" column until the user shows it
-
-        // un-comment this line to have a go of stretch-to-fit mode
-        table.getHeader().setStretchToFitActive (true);
-
-        table.setMultipleSelectionEnabled (false);     
+        return false;
     }
 
     // This is overloaded from TableListBoxModel, and must return the total number of rows in our table
@@ -203,7 +217,7 @@ private:
     std::unique_ptr<XmlElement> presetsData;  // This is the XML document loaded from the file "presets registry.xml"
     XmlElement* columnList = nullptr;         // A pointer to the sub-node of presetsData that contains the list of columns
     XmlElement* dataList   = nullptr;         // A pointer to the sub-node of presetsData that contains the list of data rows
-    int numRows = 9;                          // The number of rows of data we've got
+    int numRows = 0;                          // The number of rows of data we've got
 
 
   
@@ -312,10 +326,10 @@ private:
 
     //==============================================================================
     // this loads the database XML file into memory
-    void loadData()
+    void loadData(const String dirPath = "")
     {
-        // TO DO : not to use hard coded path
-        juce::File xmlTabledata{ "D:\\daHornet_bis_JUCE\\jucePresetManagement-plus\\Source\\Gui\\presets registry.xml" };
+         // TO DO : not to use hard coded path
+        juce::File xmlTabledata{ dirPath + "\\presets_registry_log.xml" };
 
         presetsData = XmlDocument::parse(xmlTabledata.loadFileAsString());
 

@@ -7,7 +7,7 @@ namespace Service
 			.getChildFile(ProjectInfo::companyName)
 			.getChildFile(ProjectInfo::projectName)
 	};
-	const String PresetManager::extension{ "preset" };
+	const String PresetManager::extension{ "xml" };
 	const String PresetManager::presetNameProperty{ "presetName" };
 
 	PresetManager::PresetManager(AudioProcessorValueTreeState& apvts) :

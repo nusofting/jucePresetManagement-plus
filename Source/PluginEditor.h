@@ -25,7 +25,7 @@ private:
     ProgramList programList;
     juce::TextButton cShow{ "show" };
 
-    TableListComponent  cTableList;
+  
 
     JucePresetManagerAudioProcessor& audioProcessor;
 

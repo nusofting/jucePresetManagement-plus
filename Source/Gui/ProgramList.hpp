@@ -12,7 +12,7 @@
 #include <JuceHeader.h>
 
 #include "TableListComponent.hpp"
-
+#include "../Service/PresetsRegistry.hpp"
 
 
 class ProgramList : public Component, KeyListener, Timer
@@ -44,7 +44,11 @@ public:
 		addAndMakeVisible(cPassiveMsg);
 
 		cTableList.setName("nTableList");
-		addAndMakeVisible(cTableList);
+
+		PresetsRegistry prstReg;
+
+		if(cTableList.build(prstReg.defaultDirectoryPath))
+			addAndMakeVisible(cTableList);
 
 		setTitle();
 

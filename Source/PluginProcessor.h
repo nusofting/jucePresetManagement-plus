@@ -3,6 +3,7 @@
 #include <JuceHeader.h>
 #include "Utility/ParameterHelper.h"
 #include "Service/PresetManager.h"
+#include "Service/PresetsRegistry.hpp"
 
 class JucePresetManagerAudioProcessor  : public juce::AudioProcessor
 {
@@ -45,6 +46,9 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     Service::PresetManager& getPresetManager() { return *presetManager; }
+
+    PresetsRegistry makePrstReg;
+
 
 private:
     AudioProcessorValueTreeState valueTreeState;

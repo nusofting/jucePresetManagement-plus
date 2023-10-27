@@ -11,6 +11,8 @@ JucePresetManagerAudioProcessor::JucePresetManagerAudioProcessor() :
     valueTreeState.state.setProperty("version", ProjectInfo::versionString, nullptr);
 
     presetManager = std::make_unique<Service::PresetManager>(valueTreeState);
+
+    makePrstReg.SaveRegistryToXMLFile();
 }
 
 JucePresetManagerAudioProcessor::~JucePresetManagerAudioProcessor()
