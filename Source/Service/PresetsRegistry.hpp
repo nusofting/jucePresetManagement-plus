@@ -5,7 +5,7 @@
 #include "../Source/PluginProcessor.h"
 
 
-//@ The presets_registry_log.xml is a temporary file used to build the presets table layout
+//@ The presets_registry_log.xml is a temporary file NOT used to build the presets table layout
 // the data in this file are duplicates of the properties stored in each preset file
 class PresetsRegistry
 {
