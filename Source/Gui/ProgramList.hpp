@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-	ProgramList.h
+	ProgramList.hpp
 	Author: Luigi Felici
 
   ==============================================================================
@@ -69,7 +69,7 @@ public:
 		if (isToLoad) repaint();
 
 		String curName;
-		if (selectedBank >= 0 && selectedBank < 8)
+		//if (selectedBank >= 0 && selectedBank < 8)
 			//     curName = String(String::CharPointerType(thisBankName[selectedBank]));
 
 			if (curName.isNotEmpty())

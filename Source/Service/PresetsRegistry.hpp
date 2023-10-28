@@ -6,7 +6,7 @@
 
 
 //@ The presets_registry_log.xml is a temporary file used to build the presets table layout
-// the data in this file are duplicates of the properties store in each preset file
+// the data in this file are duplicates of the properties stored in each preset file
 class PresetsRegistry
 {
 public:
@@ -25,7 +25,7 @@ public:
 		defaultDirectoryPath = defaultDirectoryCopy.getFullPathName();
 	};
 
-	StringArray getAllPresets() const
+	StringArray getAllPresetsNames() const
 	{
 		const File defaultDirectory(defaultDirectoryPath);
 
@@ -37,6 +37,25 @@ public:
 			presets.add(file.getFileNameWithoutExtension());
 		}
 		return presets;
+	}
+
+	StringArray getAllPresetsDates() const
+	{
+		const File defaultDirectory(defaultDirectoryPath);
+
+		StringArray dates;
+		const auto fileArray = defaultDirectory.findChildFiles(
+			File::TypesOfFileToFind::findFiles, false, "*.xml");
+		for (const auto& file : fileArray)
+		{
+			Time fullTime = file.getLastModificationTime();
+
+			String date = String(fullTime.getDayOfMonth()) + "/" +
+				String(fullTime.getMonth()) + "/" + String(fullTime.getYear());
+
+			dates.add(date);
+		}
+		return dates;
 	}
 
 	bool SaveRegistryToXMLFileAndMemory()
@@ -80,38 +99,37 @@ public:
 		}
 
 		XmlElement* data = new XmlElement("DATA");
-		//populate data (to be expanded to read from preset files)
-		StringArray presetNames = getAllPresets();
-		int count = 1;
-		for (auto& prstName : presetNames)
+		//populate data (to be expanded to read from preset files)		
+		int count = 0;
+		for (auto& prstName : getAllPresetsNames())
 		{
-			if (prstName != String("presets_registry_log"))
-			{
 				XmlElement* line = new XmlElement("ITEM");
-				line->setAttribute("ID", String(count++));
+				line->setAttribute("ID", String(count+1));
 				line->setAttribute("Preset", prstName);
 				line->setAttribute("Type",   "empty");
-				line->setAttribute("Date",   "empty");
+				line->setAttribute("Date", getAllPresetsDates()[count]);
 				line->setAttribute("Author", "empty");
 				line->setAttribute("Notes",  "empty");
 
 				if (line) 	data->addChildElement(line);
-			}
+
+				++count;			
 		}
 
-		XmlElement* main = new XmlElement("PRESETS_TABLE_DATA");
-		main->addChildElement(columns);
-		main->addChildElement(data);
+		// this is not a pointer so when it goes out of scope there are no leaks from the children
+		XmlElement main = XmlElement("PRESETS_TABLE_DATA");
+		main.addChildElement(columns);
+		main.addChildElement(data);
 
 		//store the presets_registry in stack memory by deep copy
-		procPresetReg = XmlElement(*main);
+		procPresetReg = XmlElement(main);
 
 		String fileName = defaultDirectoryPath + "//" + "presets_registry_log.xml";
 
 		File f2(fileName);
 		if (f2.create().failed()) return false;
 
-		return f2.replaceWithText(main->toString());
+		return f2.replaceWithText(main.toString());
 	}
 
 private:
