@@ -23,39 +23,6 @@ public:
 		};
 
 		defaultDirectoryPath = defaultDirectoryCopy.getFullPathName();
-	};
-
-	StringArray getAllPresetsNames() const
-	{
-		const File defaultDirectory(defaultDirectoryPath);
-
-		StringArray presets;
-		const auto fileArray = defaultDirectory.findChildFiles(
-			File::TypesOfFileToFind::findFiles, false, "*.xml");
-		for (const auto& file : fileArray)
-		{
-			presets.add(file.getFileNameWithoutExtension());
-		}
-		return presets;
-	}
-
-	StringArray getAllPresetsDates() const
-	{
-		const File defaultDirectory(defaultDirectoryPath);
-
-		StringArray dates;
-		const auto fileArray = defaultDirectory.findChildFiles(
-			File::TypesOfFileToFind::findFiles, false, "*.xml");
-		for (const auto& file : fileArray)
-		{
-			Time fullTime = file.getLastModificationTime();
-
-			String date = String(fullTime.getDayOfMonth()) + "/" +
-				String(fullTime.getMonth()) + "/" + String(fullTime.getYear());
-
-			dates.add(date);
-		}
-		return dates;
 	}
 
 	bool SaveRegistryToXMLFileAndMemory()
@@ -71,18 +38,18 @@ public:
 			{
 			case 0:
 				line->setAttribute("name", "ID");
-				line->setAttribute("width", "50");
+				line->setAttribute("width", "25");
 				break;
 			case 1:
+				line->setAttribute("name", "Date");
+				line->setAttribute("width", "50");
+				break;
+			case 2:
 				line->setAttribute("name", "Preset");
 				line->setAttribute("width", "200");
 				break;
-			case 2:
-				line->setAttribute("name", "Type");
-				line->setAttribute("width", "50");
-				break;
 			case 3:
-				line->setAttribute("name", "Date");
+				line->setAttribute("name", "Type");
 				line->setAttribute("width", "50");
 				break;
 			case 4:
@@ -91,27 +58,28 @@ public:
 				break;
 			case 5:
 				line->setAttribute("name", "Notes");
-				line->setAttribute("width", "200");
+				line->setAttribute("width", "280");
 				break;
 			}
 
-			if (line) 	columns->addChildElement(line);
+			if (line) columns->addChildElement(line);
 		}
 
 		XmlElement* data = new XmlElement("DATA");
 		//populate data (to be expanded to read from preset files)		
 		int count = 0;
-		for (auto& prstName : getAllPresetsNames())
+		getAllPresetsProps();
+		for (auto& prstName : presets_)
 		{
 				XmlElement* line = new XmlElement("ITEM");
 				line->setAttribute("ID", String(count+1));
 				line->setAttribute("Preset", prstName);
 				line->setAttribute("Type",   "empty");
-				line->setAttribute("Date", getAllPresetsDates()[count]);
+				line->setAttribute("Date", dates_[count]);
 				line->setAttribute("Author", "empty");
 				line->setAttribute("Notes",  "empty");
 
-				if (line) 	data->addChildElement(line);
+				if (line) data->addChildElement(line);
 
 				++count;			
 		}
@@ -124,7 +92,8 @@ public:
 		//store the presets_registry in stack memory by deep copy
 		procPresetReg = XmlElement(main);
 
-		String fileName = defaultDirectoryPath + "//" + "presets_registry_log.xml";
+		File f1(defaultDirectoryPath);
+		String fileName = f1.getParentDirectory().getFullPathName() + "//" + "presets_registry_log.xml";
 
 		File f2(fileName);
 		if (f2.create().failed()) return false;
@@ -134,7 +103,29 @@ public:
 
 private:
 
+	StringArray presets_;
+	StringArray authors_;
+	StringArray notes_;
+	StringArray dates_;
 	XmlElement& procPresetReg;
+
+	void getAllPresetsProps()
+	{
+		const File defaultDirectory(defaultDirectoryPath);
+
+		const auto fileArray = defaultDirectory.findChildFiles(
+			File::TypesOfFileToFind::findFiles, false, "*.xml");
+		for (const auto& file : fileArray)
+		{
+			Time fullTime = file.getLastModificationTime();
+			String date = String(fullTime.getDayOfMonth()) + "/" +
+				String(fullTime.getMonth()) + "/" + String(fullTime.getYear());
+
+			dates_.add(date);
+
+			presets_.add(file.getFileNameWithoutExtension());
+		}
+	}
 
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PresetsRegistry)	

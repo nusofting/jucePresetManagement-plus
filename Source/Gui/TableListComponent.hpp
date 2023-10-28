@@ -115,7 +115,7 @@ public:
 	Component* refreshComponentForCell(int rowNumber, int columnId, bool isRowSelected,
 		Component* existingComponentToUpdate) override
 	{
-		if (columnId == 1 || columnId == 4) // The ID and Date do not have a custom editable component
+		if (columnId == 1 || columnId == 2) // The ID and Date do not have a custom editable component
 		{
 			jassert(existingComponentToUpdate == nullptr);
 			return nullptr;
@@ -129,7 +129,6 @@ public:
 			textLabel = new EditableTextCustomComponent(*this);
 
 		textLabel->setRowAndColumn(rowNumber, columnId);
-
 
 		return textLabel;
 	}
